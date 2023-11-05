@@ -4,6 +4,18 @@ import argparse
 
 class Caesar:
     @staticmethod
+    def handle_key(key: str) -> int:
+        if key:
+            k = int(key)
+        else:
+            k = random.randint(1, 255)
+        return k
+
+    @staticmethod
+    def write_key(key: bytearray):
+        print(f"Your key: {key}")
+
+    @staticmethod
     def encrypt(binary_sequence: bytearray, key: int):
         for i in range(len(binary_sequence)):
             binary_sequence[i] = (binary_sequence[i] + key) % 256
@@ -36,6 +48,18 @@ class Caesar:
 
 class Vigenere:
     @staticmethod
+    def handle_key(key: str) -> bytearray:
+        if key:
+            k = bytearray(args.key.encode())
+        else:
+            k = bytearray("password".encode())
+        return k
+
+    @staticmethod
+    def write_key(key: bytearray):
+        print(f"Your key: {key.decode()}")
+
+    @staticmethod
     def encrypt(binary_sequence: bytearray, key: bytearray):
         for i in range(len(binary_sequence)):
             binary_sequence[i] = (binary_sequence[i] + key[i % len(key)]) % 256
@@ -48,12 +72,25 @@ class Vigenere:
 
 class Vernam:
     @staticmethod
-    def encrypt_vernam(binary_sequence: bytearray, key: bytearray):
-        key[:] = bytearray(random.randbytes(len(binary_sequence)))
-        binary_sequence[:] = [binary_sequence[i] ^ key[i] for i in range(len(binary_sequence))]
+    def handle_key(key_filename: str) -> str:
+        if key_filename:
+            return key_filename
+        return "key"
 
     @staticmethod
-    def decrypt_vernam(binary_sequence: bytearray, key: bytearray):
+    def write_key(key_filename: str):
+        with open(key_filename, "wb") as fkey:
+            fkey.write(Vernam.key)
+
+    @staticmethod
+    def encrypt(binary_sequence: bytearray, key_filename: str):
+        Vernam.key = bytearray(random.randbytes(len(binary_sequence)))
+        binary_sequence[:] = [binary_sequence[i] ^ Vernam.key[i] for i in range(len(binary_sequence))]
+
+    @staticmethod
+    def decrypt(binary_sequence: bytearray, key_filename: str):
+        with open(key_filename, "rb") as fkey:
+            key = bytearray(fkey.read())
         binary_sequence[:] = [binary_sequence[i] ^ key[i] for i in range(len(binary_sequence))]
 
 
@@ -65,7 +102,7 @@ cipher_dict = {
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Encrypt files with different types of ciphers")
-    parser.add_argument("command", type=str, help="Encrypt/Decrypt/Crack_cipher")
+    parser.add_argument("command", type=str, help="e/d/c (Encrypt/Decrypt/Crack_cipher)")
     parser.add_argument("cipher", type=str, help=f"Cipher type name ({'/'.join(cipher_dict.keys())})")
     parser.add_argument("input_file", type=str, help="Input file name")
     parser.add_argument("output_file", type=str, help="Output file name (default: output)", default="output")
@@ -73,20 +110,19 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.key:
-        args.key = int(args.key)
+    args.key = cipher_dict[args.cipher].handle_key(args.key)
 
     with open(args.input_file, "rb") as fin:
-        fout = open(args.output_file, "wb")
         r = bytearray(fin.read())
 
-        if args.command == "Encrypt":
+        if args.command[0].lower() == "e":
             cipher_dict[args.cipher].encrypt(r, args.key)
-        elif args.command == "Decrypt":
+            cipher_dict[args.cipher].write_key(args.key)
+        elif args.command[0].lower() == "d":
             cipher_dict[args.cipher].decrypt(r, args.key)
-        elif args.command == "Crack_cipher":
+        elif args.command[0].lower() == "c":
             args.key = cipher_dict[args.cipher].crack(r)
+            cipher_dict[args.cipher].write_key(args.key)
 
-        fout.write(r)
-        fout.close()
-        print(f"Your key: {args.key}")
+        with open(args.output_file, "wb") as fout:
+            fout.write(r)
