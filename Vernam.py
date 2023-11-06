@@ -1,3 +1,6 @@
+import random
+
+
 class Vernam:
     @staticmethod
     def handle_key(key_filename: str) -> str:

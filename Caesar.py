@@ -11,7 +11,7 @@ class Caesar:
         return k
 
     @staticmethod
-    def write_key(key: bytearray):
+    def write_key(key: int):
         print(f"Your key: {key}")
 
     @staticmethod
