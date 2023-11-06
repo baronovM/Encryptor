@@ -18,6 +18,6 @@ class Vigenere:
 
     @staticmethod
     def decrypt(binary_sequence: bytearray, key: bytearray):
-        newkey = bytearray(map(lambda x: 256 - x, key))
+        newkey = bytearray(map(lambda x: (256 - x) % 256, key))
         Vigenere.encrypt(binary_sequence, newkey)
 

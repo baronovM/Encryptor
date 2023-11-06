@@ -13,6 +13,7 @@ class TestCaesar(unittest.TestCase):
         bs = bytearray(b"abcde")
         Caesar.encrypt(bs, 2)
         self.assertEqual(bs, bytearray(b"cdefg"))
+
         bs = bytearray(b"ABOBA")
         Caesar.encrypt(bs, 4)
         self.assertEqual(bs, bytearray(b"EFSFE"))
@@ -21,6 +22,7 @@ class TestCaesar(unittest.TestCase):
         bs = bytearray(b"cdefg")
         Caesar.decrypt(bs, 2)
         self.assertEqual(bs, bytearray(b"abcde"))
+
         bs = bytearray(b"EFSFE")
         Caesar.decrypt(bs, 4)
         self.assertEqual(bs, bytearray(b"ABOBA"))
