@@ -1,6 +1,8 @@
 import unittest
-import random
 from Vigenere import Vigenere
+import random
+from io import StringIO
+from unittest.mock import patch
 
 
 class TestVigenere(unittest.TestCase):
@@ -33,6 +35,13 @@ class TestVigenere(unittest.TestCase):
         Vigenere.decrypt(b, key)
         self.assertEqual(a, b)
 
+    def test_write_key(self):
+        key = bytearray(b"QwabE")
+        expected_output = f"Your key: {key.decode()}\n"
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            Vigenere.write_key(key)
+            self.assertEqual(fake_out.getvalue(), expected_output)
+
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main()  # pragma: no cover

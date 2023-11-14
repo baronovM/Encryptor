@@ -1,5 +1,7 @@
 import unittest
 from Caesar import Caesar
+from io import StringIO
+from unittest.mock import patch
 
 
 class TestCaesar(unittest.TestCase):
@@ -36,6 +38,13 @@ class TestCaesar(unittest.TestCase):
         self.assertEqual(text, bs)
         self.assertEqual(key, 17)
 
+    def test_write_key(self):
+        key = 28
+        expected_output = f"Your key: {key}\n"
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            Caesar.write_key(key)
+            self.assertEqual(fake_out.getvalue(), expected_output)
+
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main()  # pragma: no cover

@@ -3,7 +3,7 @@ class Vigenere:
     Класс, содержащий в виде статических методов функции, относящиеся к шифру Виженера
     """
     @staticmethod
-    def handle_key(key: str) -> bytearray:
+    def handle_key(key: str | None) -> bytearray:
         """
         Если ключ задан, переводит его в массив байт.
         Иначе же возвращает ключ по умолчанию "password"
@@ -45,4 +45,3 @@ class Vigenere:
         """
         newkey = bytearray(map(lambda x: (256 - x) % 256, key))
         Vigenere.encrypt(binary_sequence, newkey)
-
